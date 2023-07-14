@@ -44,10 +44,12 @@ Add-LocalGroupMember -Group administrators -Member $ADMIN_ACCOUNT
 Get-LocalUser | ForEach-Object {if (-not($ALLOWED_ACCOUNTS.Contains($_))){Remove-LocalUser $_}}
 
 # Enable Remote Desktop
+Write-Host 'Enabling Remote Desktop'
 Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server'-name "fDenyTSConnections" -Value 0
 Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
 
 # Set power options, timeout of 0 -eq Never
+Write-Host 'Setting sleep, screen off options.'
 powercfg.exe -x -monitor-timeout-ac 0
 powercfg.exe -x -monitor-timeout-dc 0
 powercfg.exe -x -disk-timeout-ac 0
