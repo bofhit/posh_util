@@ -35,7 +35,7 @@ if (-not($executionPolicy -eq 'RemoteSigned')) {
 Set-TimeZone -Id 'Eastern Standard Time'
 
 # Add admin account.
-Write-Host "Adding account"
+Write-Host "Adding account $ADMIN_ACCOUNT"
 $password = Read-Host -AsSecureString -Prompt 'Enter password'
 New-LocalUser $ADMIN_ACCOUNT -FullName 'IT Admin' -Password $password
 Add-LocalGroupMember -Group administrators -Member $ADMIN_ACCOUNT
