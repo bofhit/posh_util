@@ -6,7 +6,12 @@
 #>
 
 $ADMIN_ACCOUNT = 'admiot'
-
+$ALLOWED_ACCOUNTS = @(
+    $ADMIN_ACCOUNT,
+    'Administrator',
+    'DefaultAccount',
+    'Guest'
+)
 # ============================================================================
 # Pre-flight checks.
 
@@ -35,7 +40,7 @@ New-LocalUser $ADMIN_ACCOUNT -FullName 'IT Admin' -Password $password
 Add-LocalGroupMember -Group administrators -Member $ADMIN_ACCOUNT
 
 # Remove all other accounts.
-Get-LocalUser | ForEach-Object {if (-not($_.Name -eq $ADMIN_ACCOUNT)){Remove-LocalUser $_.name}}
+Get-LocalUser | ForEach-Object {if (-not($ALLOWED_ACCOUNTS.Contains($_))){Remove-LocalUser $_}}
 
 # Enable Remote Desktop
 Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server'-name "fDenyTSConnections" -Value 0
