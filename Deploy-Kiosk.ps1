@@ -5,15 +5,14 @@
     Set the baseline config for a general purpose kiosk PC.
 #>
 
+# Local admin account.
 $ADMIN_ACCOUNT = 'admiot'
-$ALLOWED_ACCOUNTS = @(
-    $ADMIN_ACCOUNT,
-    'Administrator',
-    'DefaultAccount',
-    'Guest'
-)
+# Directory for Powershell scripts.
+$POSH_DIR = 'C:\Powershell'
+$TIMEZONE = 'Eastern Standard Time'
+
 # ============================================================================
-# Pre-flight checks.
+# Pre-run checks.
 
 # Check for elevation.
 $id = [System.Security.Principal.WindowsIdentity]::GetCurrent()
@@ -26,16 +25,24 @@ if (-not($principal.IsInRole([System.Security.Principal.WindowsBuiltInRole]::Adm
 # ============================================================================
 
 # Set-Timezone
-Set-TimeZone -Id 'Eastern Standard Time'
+Write-host "Setting timezone to $TIMEZONE"
+Set-TimeZone -Id $TIMEZONE
 
-# Add admin account.
-Write-Host "Adding account $ADMIN_ACCOUNT"
-$password = Read-Host -AsSecureString -Prompt 'Enter password'
-New-LocalUser $ADMIN_ACCOUNT -FullName 'IT Admin' -Password $password
-Add-LocalGroupMember -Group administrators -Member $ADMIN_ACCOUNT
+# Set password for admin account. Create if needed.
+Write-Host 'Set password for local admin account.'
+$password = Read-Host -AsSecureString -Prompt "Enter password for $ADMIN_ACCOUNT"   
+$localusers = (Get-LocalUser) | Foreach-Object   {$_.name}
+if (-not($localusers.Contains($ADMIN_ACCOUNT))) {
+    New-LocalUser $ADMIN_ACCOUNT -FullName 'IT Admin' -Password $password
+} else {
+    Set-LocalUser $ADMIN_ACCOUNT -Password $password
+}
 
-# Remove all other accounts.
-Get-LocalUser | ForEach-Object {if (-not($ALLOWED_ACCOUNTS.Contains($_))){Remove-LocalUser $_}}
+$localadmins = Get-LocalGroupMember -Group administrators | ForEach-Object {$_.name}
+$csname = Get-ComputerInfo | Select-Object -ExpandProperty CsName
+if (-not($localadmins.Contains("$csname\$ADMIN_ACCOUNT"))) {
+    Add-LocalGroupMember -Group administrators -Member $ADMIN_ACCOUNT
+}
 
 # Enable Remote Desktop
 Write-Host 'Enabling Remote Desktop'
@@ -53,3 +60,7 @@ powercfg.exe -x -standby-timeout-dc 0
 powercfg.exe -x -hibernate-timeout-ac 0
 powercfg.exe -x -hibernate-timeout-dc 0
 
+# Create folder for Powershell scripts.
+if (-not(Test-Path $POSH_DIR)) {
+    New-Item -Path $POSH_DIR -ItemType Directory-ItemType Directory-ItemType Directory-ItemType Directory-ItemType Directory-ItemType Directory-ItemType Directory-ItemType Directory   
+}
