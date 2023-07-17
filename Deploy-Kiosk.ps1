@@ -23,12 +23,6 @@ if (-not($principal.IsInRole([System.Security.Principal.WindowsBuiltInRole]::Adm
     throw 'Please run this script as an administrator.'
 }
 
-# Check that script execution is enabled.
-$executionPolicy = Get-ExecutionPolicy
-if (-not($executionPolicy -eq 'RemoteSigned')) {
-    throw 'Please set Execution-Policy to RemoteSigned'
-}
-
 # ============================================================================
 
 # Set-Timezone
