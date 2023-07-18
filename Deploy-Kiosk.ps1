@@ -62,5 +62,5 @@ powercfg.exe -x -hibernate-timeout-dc 0
 
 # Create folder for Powershell scripts.
 if (-not(Test-Path $POSH_DIR)) {
-    New-Item -Path $POSH_DIR -ItemType Directory-ItemType Directory-ItemType Directory-ItemType Directory-ItemType Directory-ItemType Directory-ItemType Directory-ItemType Directory   
+    New-Item -Path $POSH_DIR -ItemType Directory
 }
